@@ -98,4 +98,8 @@ class SaleController extends Controller
             'data' => $suggestions
         ]);
     }
+
+    public function tes(){
+        dd('test');
+    }
 }
