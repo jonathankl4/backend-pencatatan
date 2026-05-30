@@ -18,8 +18,8 @@ class DashboardService
      */
     public function getDashboardData(int $userId, ?string $startDate = null, ?string $endDate = null): array
     {
-        $start = $startDate ? Carbon::parse($startDate)->startOfDay() : Carbon::now()->startOfMonth();
-        $end = $endDate ? Carbon::parse($endDate)->endOfDay() : Carbon::now()->endOfMonth();
+        $start = $startDate ? Carbon::parse($startDate)->startOfDay() : Carbon::now()->startOfDay();
+        $end = $endDate ? Carbon::parse($endDate)->endOfDay() : Carbon::now()->endOfDay();
 
         // 1. Total Revenue
         $totalRevenue = Sale::where('user_id', $userId)
