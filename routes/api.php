@@ -23,6 +23,6 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::apiResource('products', ProductController::class);
     Route::get('/sales/suggestions', [SaleController::class, 'suggestions']);
-    Route::apiResource('sales', SaleController::class)->except(['update']);
+    Route::apiResource('sales', SaleController::class);
     Route::apiResource('expenses', ExpenseController::class);
 });

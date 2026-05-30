@@ -89,4 +89,70 @@ class SaleService
             throw $e;
         }
     }
+
+    /**
+     * Update an existing sale and recalculate its items and totals.
+     */
+    public function updateSale(Sale $sale, array $data): Sale
+    {
+        DB::beginTransaction();
+        try {
+            // Delete old items
+            $sale->items()->delete();
+
+            $totalCost = 0;
+            $totalRevenue = 0;
+            $grossProfit = 0;
+
+            foreach ($data['items'] as $itemData) {
+                $productId = $itemData['product_id'] ?? null;
+                $productName = $itemData['product_name'];
+                $sellPrice = $itemData['sell_price'];
+                $quantity = $itemData['quantity'];
+
+                if ($productId) {
+                    $product = Product::where('user_id', $sale->user_id)->findOrFail($productId);
+                    $costPrice = $product->cost_price;
+                    $productName = $product->name;
+                } else {
+                    $costPrice = 0;
+                }
+
+                $subtotalCost = $costPrice * $quantity;
+                $subtotalRevenue = $sellPrice * $quantity;
+                $subtotalProfit = $subtotalRevenue - $subtotalCost;
+
+                $sale->items()->create([
+                    'product_id' => $productId,
+                    'product_name' => $productName,
+                    'cost_price' => $costPrice,
+                    'sell_price' => $sellPrice,
+                    'quantity' => $quantity,
+                    'subtotal_cost' => $subtotalCost,
+                    'subtotal_revenue' => $subtotalRevenue,
+                    'subtotal_profit' => $subtotalProfit,
+                ]);
+
+                $totalCost += $subtotalCost;
+                $totalRevenue += $subtotalRevenue;
+                $grossProfit += $subtotalProfit;
+            }
+
+            // Update main sale totals
+            $sale->update([
+                'total_cost' => $totalCost,
+                'total_revenue' => $totalRevenue,
+                'gross_profit' => $grossProfit,
+                'notes' => $data['notes'] ?? null,
+                'sale_date' => $data['sale_date'],
+            ]);
+
+            DB::commit();
+
+            return $sale->load('items');
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 }

@@ -60,6 +60,23 @@ class SaleController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     */
+    public function update(StoreSaleRequest $request, string $id)
+    {
+        try {
+            $sale = $request->user()->sales()->findOrFail($id);
+            $updatedSale = $this->saleService->updateSale($sale, $request->validated());
+            return new SaleResource($updatedSale);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Failed to update sale.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Request $request, string $id)
