@@ -15,7 +15,13 @@ class ExpenseController extends Controller
      */
     public function index(Request $request)
     {
-        $expenses = $request->user()->expenses()->latest('expense_date')->latest('created_at')->get();
+        $query = $request->user()->expenses();
+
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $query->whereBetween('expense_date', [$request->start_date, $request->end_date]);
+        }
+
+        $expenses = $query->latest('expense_date')->latest('created_at')->get();
         return ExpenseResource::collection($expenses);
     }
 
