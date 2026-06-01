@@ -96,20 +96,32 @@ class SaleController extends Controller
         $products = \DB::table('products')
             ->where('user_id', $userId)
             ->where('is_active', true)
-            ->select('name as product_name', 'sell_price')
+            ->select('id as product_id', 'name as product_name', 'sell_price')
             ->get();
 
         $saleItems = \DB::table('sale_items')
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
             ->where('sales.user_id', $userId)
-            ->select('sale_items.product_name', 'sale_items.sell_price')
+            ->select('sale_items.product_id', 'sale_items.product_name', 'sale_items.sell_price')
             ->orderBy('sales.sale_date', 'desc')
             ->orderBy('sales.created_at', 'desc')
             ->get();
 
-        $suggestions = $products->concat($saleItems)
-            ->unique('product_name')
-            ->values();
+        $rawSuggestions = $products->concat($saleItems);
+        $suggestionsMap = [];
+
+        foreach ($rawSuggestions as $item) {
+            $nameLower = strtolower(trim($item->product_name));
+            if ($nameLower === '') {
+                continue;
+            }
+
+            if (!isset($suggestionsMap[$nameLower]) || ($item->product_id !== null && $suggestionsMap[$nameLower]->product_id === null)) {
+                $suggestionsMap[$nameLower] = $item;
+            }
+        }
+
+        $suggestions = array_values($suggestionsMap);
 
         return response()->json([
             'data' => $suggestions

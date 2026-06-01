@@ -47,11 +47,30 @@ class SaleService
                 $quantity = $itemData['quantity'];
 
                 if ($productId) {
-                    $product = Product::where('user_id', $userId)->findOrFail($productId);
-                    $costPrice = $product->cost_price;
-                    $productName = $product->name;
+                    $product = Product::where('user_id', $userId)->find($productId);
+                    if ($product) {
+                        $costPrice = $product->cost_price;
+                        $productName = $product->name;
+                    } else {
+                        $costPrice = 0;
+                        $productId = null;
+                    }
                 } else {
-                    $costPrice = 0;
+                    $product = Product::where('user_id', $userId)
+                        ->where('name', $productName)
+                        ->first();
+                    if (!$product) {
+                        $product = Product::where('user_id', $userId)
+                            ->whereRaw('LOWER(name) = ?', [strtolower($productName)])
+                            ->first();
+                    }
+                    if ($product) {
+                        $productId = $product->id;
+                        $costPrice = $product->cost_price;
+                        $productName = $product->name;
+                    } else {
+                        $costPrice = 0;
+                    }
                 }
 
                 $subtotalCost = $costPrice * $quantity;
@@ -111,11 +130,30 @@ class SaleService
                 $quantity = $itemData['quantity'];
 
                 if ($productId) {
-                    $product = Product::where('user_id', $sale->user_id)->findOrFail($productId);
-                    $costPrice = $product->cost_price;
-                    $productName = $product->name;
+                    $product = Product::where('user_id', $sale->user_id)->find($productId);
+                    if ($product) {
+                        $costPrice = $product->cost_price;
+                        $productName = $product->name;
+                    } else {
+                        $costPrice = 0;
+                        $productId = null;
+                    }
                 } else {
-                    $costPrice = 0;
+                    $product = Product::where('user_id', $sale->user_id)
+                        ->where('name', $productName)
+                        ->first();
+                    if (!$product) {
+                        $product = Product::where('user_id', $sale->user_id)
+                            ->whereRaw('LOWER(name) = ?', [strtolower($productName)])
+                            ->first();
+                    }
+                    if ($product) {
+                        $productId = $product->id;
+                        $costPrice = $product->cost_price;
+                        $productName = $product->name;
+                    } else {
+                        $costPrice = 0;
+                    }
                 }
 
                 $subtotalCost = $costPrice * $quantity;
