@@ -28,7 +28,8 @@
         <div class="container-fluid">
             <div class="d-flex align-items-center">
                 @if(isset($showBackButton) && $showBackButton)
-                    <button class="btn btn-link text-white text-decoration-none p-0 me-3" onclick="history.back()">
+                    <button class="btn btn-link text-white text-decoration-none p-0 me-3" 
+                        onclick="{{ isset($backUrl) ? 'window.location.href=\''.$backUrl.'\'' : 'history.back()' }}">
                         <i class="bi bi-arrow-left fs-4"></i>
                     </button>
                 @else

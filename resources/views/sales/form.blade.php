@@ -1,4 +1,4 @@
-@extends('layouts.authenticated', ['showBackButton' => true])
+@extends('layouts.authenticated', ['showBackButton' => true, 'backUrl' => url()->previous() !== url()->current() ? url()->previous() : '/sales'])
 
 @section('title', isset($id) ? 'Edit Penjualan' : 'Buat Penjualan')
 
