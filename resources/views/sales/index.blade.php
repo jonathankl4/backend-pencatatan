@@ -125,9 +125,10 @@
         const filtered = allSales.filter(sale => {
             if (!query) return true;
             // Search inside items
-            return sale.items && sale.items.some(item => 
-                item.product_name && item.product_name.toLowerCase().includes(query)
-            );
+            return sale.items && sale.items.some(item => {
+                const name = item.product_name ? item.product_name.toLowerCase() : '';
+                return name.includes(query);
+            });
         });
 
         if(filtered.length === 0) {
@@ -208,7 +209,11 @@
         
         fetchSales();
 
-        $('#searchSale').on('input', renderSales);
+        let searchTimeout;
+        $('#searchSale').on('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(renderSales, 300);
+        });
 
         $('#btnFilterDate').click(function() {
             const today = new Date().toISOString().split('T')[0];
@@ -248,7 +253,7 @@
             
             Swal.fire({
                 title: 'Hapus Transaksi',
-                text: \`Apakah Anda yakin ingin menghapus transaksi \${code}? Tindakan ini tidak dapat dibatalkan.\`,
+                text: `Apakah Anda yakin ingin menghapus transaksi ${code}? Tindakan ini tidak dapat dibatalkan.`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#F44336',
@@ -259,11 +264,11 @@
                 if (result.isConfirmed) {
                     showLoading();
                     $.ajax({
-                        url: \`/api/sales/\${id}\`,
+                        url: `/api/sales/${id}`,
                         type: 'DELETE',
                         success: function() {
                             hideLoading();
-                            showSuccess(\`Transaksi \${code} berhasil dihapus\`);
+                            showSuccess(`Transaksi ${code} berhasil dihapus`);
                             fetchSales();
                         },
                         error: function(xhr) {

@@ -94,13 +94,13 @@
 
     const updateCartUI = () => {
         if(cart.length === 0) {
-            $('#emptyCart').show();
+            $('#emptyCart').removeClass('d-none').addClass('d-flex');
             $('#cartList').hide();
             $('#cartTotal').text('Rp 0');
             return;
         }
 
-        $('#emptyCart').hide();
+        $('#emptyCart').removeClass('d-flex').addClass('d-none');
         $('#cartList').show();
 
         let total = 0;
@@ -148,7 +148,7 @@
     const loadExistingSale = (id) => {
         showLoading();
         $.ajax({
-            url: \`/api/sales/\${id}\`,
+            url: `/api/sales/${id}`,
             type: 'GET',
             success: function(res) {
                 hideLoading();
@@ -324,7 +324,7 @@
                 items: cart
             };
 
-            const url = saleId ? \`/api/sales/\${saleId}\` : '/api/sales';
+            const url = saleId ? `/api/sales/${saleId}` : '/api/sales';
             const method = saleId ? 'PUT' : 'POST';
 
             $.ajax({

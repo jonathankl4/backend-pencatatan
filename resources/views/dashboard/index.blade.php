@@ -32,7 +32,7 @@
     <div class="row g-3 mb-4">
         <!-- Pendapatan -->
         <div class="col-6">
-            <div class="card h-100 mb-0 shadow-sm border-0" style="border-radius: 12px; cursor: pointer;" onclick="window.location.href='/sales'">
+            <div class="card h-100 mb-0 shadow-sm border-0" style="border-radius: 12px; cursor: pointer;" onclick="navigateWithFilters('/sales')">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center mb-2">
                         <i class="bi bi-graph-up-arrow text-primary-custom" style="font-size: 20px;"></i>
@@ -45,7 +45,7 @@
         
         <!-- Pengeluaran -->
         <div class="col-6">
-            <div class="card h-100 mb-0 shadow-sm border-0" style="border-radius: 12px; cursor: pointer;" onclick="window.location.href='/expenses'">
+            <div class="card h-100 mb-0 shadow-sm border-0" style="border-radius: 12px; cursor: pointer;" onclick="navigateWithFilters('/expenses')">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center mb-2">
                         <i class="bi bi-graph-down-arrow text-danger" style="font-size: 20px;"></i>
@@ -151,6 +151,16 @@
         return new Date(dateString).toLocaleDateString('id-ID', options);
     };
 
+    const navigateWithFilters = (url) => {
+        const start = $('#startDate').val();
+        const end = $('#endDate').val();
+        if (start && end) {
+            window.location.href = `${url}?startDate=${start}&endDate=${end}`;
+        } else {
+            window.location.href = url;
+        }
+    };
+
     const fetchDashboard = () => {
         let url = '/api/dashboard';
         const start = $('#startDate').val();
@@ -193,10 +203,13 @@
 
     const renderRecap = () => {
         const query = $('#searchRecap').val().toLowerCase();
-        const filtered = itemRecapData.filter(item => item.product_name.toLowerCase().includes(query));
+        const filtered = itemRecapData.filter(item => {
+            const name = item.product_name ? item.product_name.toLowerCase() : '';
+            return name.includes(query);
+        });
         
         // Sort alphabetically
-        filtered.sort((a, b) => a.product_name.localeCompare(b.product_name));
+        filtered.sort((a, b) => (a.product_name || '').localeCompare(b.product_name || ''));
 
         if(filtered.length === 0) {
             $('#recapList').html('<div class="text-center py-4 text-secondary">Belum ada barang terjual pada periode ini.</div>');
@@ -234,8 +247,12 @@
         // Initialize dashboard
         fetchDashboard();
 
-        // Search recap
-        $('#searchRecap').on('input', renderRecap);
+        // Search recap with debounce
+        let searchTimeout;
+        $('#searchRecap').on('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(renderRecap, 300);
+        });
 
         // Date Filter interactions
         $('#btnFilterDate').click(function() {

@@ -74,7 +74,7 @@
             // Load existing data
             showLoading();
             $.ajax({
-                url: \`/api/expenses/\${expenseId}\`,
+                url: `/api/expenses/${expenseId}`,
                 type: 'GET',
                 success: function(res) {
                     hideLoading();
@@ -105,7 +105,7 @@
             
             showLoading();
             
-            const url = expenseId ? \`/api/expenses/\${expenseId}\` : '/api/expenses';
+            const url = expenseId ? `/api/expenses/${expenseId}` : '/api/expenses';
             const method = expenseId ? 'PUT' : 'POST';
             
             $.ajax({

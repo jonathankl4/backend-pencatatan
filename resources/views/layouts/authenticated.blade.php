@@ -56,18 +56,14 @@
                 <a href="/dashboard" class="nav-link-custom {{ request()->is('dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2"></i> Dashboard
                 </a>
-                <a href="/products" class="nav-link-custom {{ request()->is('products*') ? 'active' : '' }}">
-                    <i class="bi bi-box-seam"></i> Products
-                </a>
+                
                 <a href="/expenses" class="nav-link-custom {{ request()->is('expenses*') ? 'active' : '' }}">
-                    <i class="bi bi-receipt"></i> Expenses
+                    <i class="bi bi-receipt"></i> Pengeluaran
                 </a>
                 <a href="/sales" class="nav-link-custom {{ request()->is('sales*') ? 'active' : '' }}">
-                    <i class="bi bi-cart3"></i> Sales
+                    <i class="bi bi-cart3"></i> Penjualan
                 </a>
-                <a href="/reports" class="nav-link-custom {{ request()->is('reports*') ? 'active' : '' }}">
-                    <i class="bi bi-bar-chart-fill"></i> Reports
-                </a>
+                
             </div>
             
             <hr class="my-3">

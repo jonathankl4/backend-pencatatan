@@ -123,7 +123,9 @@
         const query = $('#searchExpense').val().toLowerCase();
         
         const filtered = allExpenses.filter(expense => {
-            return expense.name.toLowerCase().includes(query) || expense.category.toLowerCase().includes(query);
+            const name = expense.name ? expense.name.toLowerCase() : '';
+            const category = expense.category ? expense.category.toLowerCase() : '';
+            return name.includes(query) || category.includes(query);
         });
 
         if(filtered.length === 0) {
@@ -178,7 +180,11 @@
         }
         fetchExpenses();
 
-        $('#searchExpense').on('input', renderExpenses);
+        let searchTimeout;
+        $('#searchExpense').on('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(renderExpenses, 300);
+        });
 
         $('#btnFilterDate').click(function() {
             const today = new Date().toISOString().split('T')[0];
@@ -219,7 +225,7 @@
             
             Swal.fire({
                 title: 'Hapus Pengeluaran',
-                text: \`Apakah Anda yakin ingin menghapus pengeluaran "\${name}"? Tindakan ini tidak dapat dibatalkan.\`,
+                text: `Apakah Anda yakin ingin menghapus pengeluaran "${name}"? Tindakan ini tidak dapat dibatalkan.`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#F44336',
@@ -230,11 +236,11 @@
                 if (result.isConfirmed) {
                     showLoading();
                     $.ajax({
-                        url: \`/api/expenses/\${id}\`,
+                        url: `/api/expenses/${id}`,
                         type: 'DELETE',
                         success: function() {
                             hideLoading();
-                            showSuccess(\`Pengeluaran "\${name}" berhasil dihapus\`);
+                            showSuccess(`Pengeluaran "${name}" berhasil dihapus`);
                             fetchExpenses();
                         },
                         error: function(xhr) {
