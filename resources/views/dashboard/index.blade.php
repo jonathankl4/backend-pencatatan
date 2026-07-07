@@ -171,16 +171,17 @@
             url: url,
             type: 'GET',
             success: function(res) {
+                const data = res.data || res;
                 // Parse summary
-                if(res.summary) {
-                    $('#valRevenue').text(formatRupiah(res.summary.total_revenue));
-                    $('#valExpenses').text(formatRupiah(res.summary.total_expenses));
-                    $('#valGrossProfit').text(formatRupiah(res.summary.total_gross_profit));
-                    $('#valNetProfit').text(formatRupiah(res.summary.net_profit));
+                if(data.summary) {
+                    $('#valRevenue').text(formatRupiah(data.summary.total_revenue));
+                    $('#valExpenses').text(formatRupiah(data.summary.total_expenses));
+                    $('#valGrossProfit').text(formatRupiah(data.summary.total_gross_profit));
+                    $('#valNetProfit').text(formatRupiah(data.summary.net_profit));
                 }
                 
                 // Store and render recap
-                itemRecapData = res.item_recap || [];
+                itemRecapData = data.item_recap || [];
                 renderRecap();
             },
             error: function(xhr) {
