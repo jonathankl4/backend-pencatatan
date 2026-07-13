@@ -23,3 +23,13 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Disable ModSecurity/WAF to prevent 403 Bot CAPTCHA blocks
+<IfModule mod_security.c>
+  SecFilterEngine Off
+  SecFilterScanPOST Off
+</IfModule>
+
+<IfModule security2_module>
+    SecRuleEngine Off
+</IfModule>
